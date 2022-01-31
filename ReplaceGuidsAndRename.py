@@ -14,8 +14,6 @@ RX_PROJECT_NAME = re.compile(PT_PROJECT_NAME)
 
 PROJECT_NAMES = (
     'ClientPlugin',
-    'TorchPlugin',
-    'DedicatedPlugin',
     'Shared',
 )
 
