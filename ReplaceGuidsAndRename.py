@@ -68,7 +68,6 @@ def main():
     replacements = {
         'PluginTemplate': plugin_name,
         'E507FDD0-C983-44A3-BBEE-82856AC4AAE0': generate_guid().upper(),
-        '21F45862-D7B3-4AFD-8056-099E713A7C25': generate_guid().upper(),
         '204234CA-79BF-42DE-BCE7-4737BBCC0290': generate_guid().upper(),
         'ba48180c-934c-484c-b502-44c1a855a37c': torch_guid,
         'BA48180C-934C-484C-B502-44C1A855A37C': torch_guid.upper(),
