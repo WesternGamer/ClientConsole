@@ -9,7 +9,7 @@ namespace ClientPlugin
     // ReSharper disable once UnusedType.Global
     public class Plugin : IPlugin
     {
-        public const string Name = "PluginTemplate";
+        public const string Name = "ClientConsole";
         public static readonly IPluginLogger Log = new KeenPluginLogger(Name);
         public static Plugin Instance;
 
