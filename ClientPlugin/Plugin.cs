@@ -1,8 +1,13 @@
 ﻿using System;
+using System.IO;
 using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Text;
 using HarmonyLib;
+using Microsoft.Win32.SafeHandles;
 using Shared.Logging;
 using VRage.Plugins;
+using VRage.Utils;
 
 namespace ClientPlugin
 {
@@ -18,6 +23,12 @@ namespace ClientPlugin
         private static readonly object InitializationMutex = new object();
         private static bool initialized;
         private static bool failed;
+
+        [DllImport("kernel32.dll", EntryPoint = "AllocConsole", SetLastError = true, CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
+        private static extern int AllocConsole();
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        private static extern bool FreeConsole();
 
         [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
         public void Init(object gameInstance)
@@ -44,8 +55,7 @@ namespace ClientPlugin
         {
             try
             {
-                // TODO: Save state and close resources here, called when the game exists (not guaranteed!)
-                // IMPORTANT: Do NOT call harmony.UnpatchAll() here! It may break other plugins.
+                FreeConsole();
             }
             catch (Exception ex)
             {
@@ -96,7 +106,15 @@ namespace ClientPlugin
 
         private void Initialize()
         {
-            // TODO: Put your one time initialization code here. It is executed on first update, not on loading the plugin.
+            AllocConsole();
+
+            StreamWriter standardOutput = new StreamWriter(Console.OpenStandardOutput(), Encoding.GetEncoding(437));
+            standardOutput.AutoFlush = false;
+            Console.SetOut(standardOutput);
+
+            //Console.Out.WriteLine($"[{Name}]: Space Engineers console loaded.");
+            Log.Info("Space Engineers console loaded.");
+
         }
 
         private void CustomUpdate()
