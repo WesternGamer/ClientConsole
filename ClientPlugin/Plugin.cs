@@ -24,11 +24,34 @@ namespace ClientPlugin
         private static bool initialized;
         private static bool failed;
 
-        [DllImport("kernel32.dll", EntryPoint = "AllocConsole", SetLastError = true, CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
+        [DllImport("kernel32.dll",
+            EntryPoint = "AllocConsole",
+            SetLastError = true,
+            CharSet = CharSet.Auto,
+            CallingConvention = CallingConvention.StdCall)]
         private static extern int AllocConsole();
 
         [DllImport("kernel32.dll", SetLastError = true)]
+        private static extern IntPtr CreateFile(
+            string lpFileName,
+            uint dwDesiredAccess,
+            uint dwShareMode,
+            uint lpSecurityAttributes,
+            uint dwCreationDisposition,
+            uint dwFlagsAndAttributes,
+            uint hTemplateFile);
+
+        [DllImport("kernel32.dll", SetLastError = true)]
         private static extern bool FreeConsole();
+
+        [DllImport("user32.dll")]
+        public static extern int DeleteMenu(IntPtr hMenu, int nPosition, int wFlags);
+
+        [DllImport("user32.dll")]
+        private static extern IntPtr GetSystemMenu(IntPtr hWnd, bool bRevert);
+
+        [DllImport("kernel32.dll", ExactSpelling = true)]
+        private static extern IntPtr GetConsoleWindow();
 
         [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.NoInlining)]
         public void Init(object gameInstance)
@@ -108,13 +131,26 @@ namespace ClientPlugin
         {
             AllocConsole();
 
-            StreamWriter standardOutput = new StreamWriter(Console.OpenStandardOutput(), Encoding.GetEncoding(437));
-            standardOutput.AutoFlush = false;
+            IntPtr stdHandle = CreateFile("CONOUT$", 0x40000000, 0x2, 0, 0x3, 0, 0);
+
+            SafeFileHandle safeFileHandle = new SafeFileHandle(stdHandle, true);
+
+            FileStream fileStream = new FileStream(safeFileHandle, FileAccess.Write);
+
+            Encoding encoding = Encoding.GetEncoding(437);
+
+            StreamWriter standardOutput = new StreamWriter(fileStream, encoding);
+            standardOutput.AutoFlush = true;
+
+            //Sets output stream for console.
             Console.SetOut(standardOutput);
+            Console.Title = "Space Engineers Console Output";
+            //Enables Ctrl+C to terminate application.
+            Console.TreatControlCAsInput = false;
+            //Disables X button on top right of console window.
+            DeleteMenu(GetSystemMenu(GetConsoleWindow(), false), 0xF060, 0x00000000);
 
-            //Console.Out.WriteLine($"[{Name}]: Space Engineers console loaded.");
-            Log.Info("Space Engineers console loaded.");
-
+            Console.WriteLine($"[{Name}]: Space Engineers console loaded.");
         }
 
         private void CustomUpdate()
