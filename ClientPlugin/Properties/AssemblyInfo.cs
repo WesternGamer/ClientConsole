@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("Provides console attached to Space Engineers for debugging purposes.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("WesternGamer")]
-[assembly: AssemblyProduct("ClientPluginClientConsole")]
+[assembly: AssemblyProduct("ClientPlugin")]
 [assembly: AssemblyCopyright("Copyright © WesternGamer 2022")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
